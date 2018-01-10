@@ -18,10 +18,10 @@ libraryDependencies += "com.lynbrookrobotics" %% "potassium-core" % potassiumVer
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-commons" % potassiumVersion
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-frc" % potassiumVersion
 
-libraryDependencies += "edu.wpi.first" % "wpilib" % "2018.1.1"
-libraryDependencies += "edu.wpi.first" % "wpiutil" % "2018.1.1"
-libraryDependencies += "edu.wpi.first" % "cscore" % "2018.1.1"
+val wpiVersion = "2018.1.1"
+libraryDependencies += "edu.wpi.first" % "wpilib" % wpiVersion
+libraryDependencies += "edu.wpi.first" % "cscore" % wpiVersion
+libraryDependencies += "edu.wpi.first" % "ntcore" % wpiVersion
+libraryDependencies += "edu.wpi.first" % "wpiutil" % wpiVersion
 libraryDependencies += "com.ctre" % "phoenix" % "5.1.3.1"
 libraryDependencies += "org.opencv" % "opencv-java" % "3.2.0"
-
-unmanagedJars in Compile += file("/Users/yerin/wpilib/java/current/lib/ntcore.jar")

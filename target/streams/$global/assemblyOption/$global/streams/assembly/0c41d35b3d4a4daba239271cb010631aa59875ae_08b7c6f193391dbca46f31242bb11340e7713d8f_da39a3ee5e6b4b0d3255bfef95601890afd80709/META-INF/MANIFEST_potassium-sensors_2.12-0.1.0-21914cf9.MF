@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: potassium-sensors
-Implementation-Version: 0.1.0-21914cf9
-Specification-Vendor: com.lynbrookrobotics
-Specification-Title: potassium-sensors
-Implementation-Vendor-Id: com.lynbrookrobotics
-Specification-Version: 0.1.0-21914cf9
-Implementation-Vendor: com.lynbrookrobotics
-
