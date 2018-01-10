@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sbt: com.ctre:ctrlib:4.4.1.12:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.coursier/cache/v1/http/team846.github.io/wpilib-maven/com/ctre/ctrlib/4.4.1.12/ctrlib-4.4.1.12.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.coursier/cache/v1/http/team846.github.io/wpilib-maven/com/ctre/ctrlib/4.4.1.12/ctrlib-4.4.1.12-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

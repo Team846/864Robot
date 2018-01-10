@@ -1,0 +1,16 @@
+coursier.ResolutionException: Encountered 1 error(s) in dependency resolution:
+    edu.wpi.first:networktables:2018.1.1:
+        not found:
+            /Users/yerin/.ivy2/local/edu.wpi.first/networktables/2018.1.1/ivys/ivy.xml
+            https://repo1.maven.org/maven2/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+            http://team846.github.io/repo/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+            http://team846.github.io/wpilib-maven/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+            https://github.com/WPIRoboticsProjects/opencv-maven/raw/mvn-repo/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+[error] (*:ssExtractDependencies) coursier.ResolutionException: Encountered 1 error(s) in dependency resolution:
+[error]     edu.wpi.first:networktables:2018.1.1:
+[error]         not found:
+[error]             /Users/yerin/.ivy2/local/edu.wpi.first/networktables/2018.1.1/ivys/ivy.xml
+[error]             https://repo1.maven.org/maven2/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+[error]             http://team846.github.io/repo/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+[error]             http://team846.github.io/wpilib-maven/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
+[error]             https://github.com/WPIRoboticsProjects/opencv-maven/raw/mvn-repo/edu/wpi/first/networktables/2018.1.1/networktables-2018.1.1.pom
