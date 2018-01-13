@@ -10,16 +10,16 @@ import squants.time.{Milliseconds, Seconds}
 import squants.{Each, Length, Velocity}
 
 class DrivetrainHardware extends TwoSidedDriveHardware {
-  private val leftFront = new TalonSRX(10)
-  private val rightFront = new TalonSRX(12)
-  val left = new TalonSRX(11)
-  val right = new TalonSRX(13)
+  val leftFront = new TalonSRX(10)
+  val rightFront = new TalonSRX(12)
+  val leftBack = new TalonSRX(11)
+  val rightBack = new TalonSRX(13)
 
-  leftFront.follow(left)
-  rightFront.follow(right)
+  leftFront.follow(leftBack)
+  rightFront.follow(rightBack)
 
-  val leftEncoder = new TalonEncoder(left, Ratio(Degrees(360), Each(8192)))
-  val rightEncoder = new TalonEncoder(right, Ratio(Degrees(360), Each(8192)))
+  val leftEncoder = new TalonEncoder(leftBack, Ratio(Degrees(360), Each(8192)))
+  val rightEncoder = new TalonEncoder(rightBack, Ratio(Degrees(360), Each(8192)))
 
   val wheelRadius = Inches(3)
 
