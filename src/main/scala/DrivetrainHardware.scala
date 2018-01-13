@@ -10,13 +10,15 @@ import squants.time.{Milliseconds, Seconds}
 import squants.{Each, Length, Velocity}
 
 class DrivetrainHardware extends TwoSidedDriveHardware {
-  val leftFront = new TalonSRX(10)
+  val leftFront = new TalonSRX(10) //TalonController
   val rightFront = new TalonSRX(12)
   val leftBack = new TalonSRX(11)
   val rightBack = new TalonSRX(13)
 
   leftFront.follow(leftBack)
   rightFront.follow(rightBack)
+
+  val clock = WPIClock
 
   val leftEncoder = new TalonEncoder(leftBack, Ratio(Degrees(360), Each(8192)))
   val rightEncoder = new TalonEncoder(rightBack, Ratio(Degrees(360), Each(8192)))
