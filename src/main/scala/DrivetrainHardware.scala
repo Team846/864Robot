@@ -1,15 +1,19 @@
-import com.ctre.CANTalon
+import java.io.{File, PrintWriter}
+
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.lynbrookrobotics.potassium.commons.drivetrain.TwoSidedDriveHardware
 import com.lynbrookrobotics.potassium.frc.{TalonEncoder, WPIClock}
 import com.lynbrookrobotics.potassium.streams._
 import com.lynbrookrobotics.potassium.units.Ratio
-import squants.motion.MetersPerSecond
-import squants.space.{Degrees, Feet, Inches, Meters}
-import squants.time.{Milliseconds, Seconds}
+import squants.space.{Degrees, Feet, Inches}
+import squants.time.Milliseconds
 import squants.{Each, Length, Velocity}
 
 class DrivetrainHardware extends TwoSidedDriveHardware {
+  // Test with 1 and 10 ms
+  val period = Milliseconds(10)
+
   val leftFront = new TalonSRX(10) //TalonController
   val rightFront = new TalonSRX(12)
   val leftBack = new TalonSRX(11)
@@ -25,19 +29,35 @@ class DrivetrainHardware extends TwoSidedDriveHardware {
 
   val wheelRadius = Inches(3)
 
-  override val leftVelocity: Stream[Velocity] = Stream.periodic(Milliseconds(10)) {
+  override val leftVelocity: Stream[Velocity] = Stream.periodic(period) {
     leftEncoder.getAngularVelocity onRadius wheelRadius
   }(WPIClock)
 
-  override val rightVelocity: Stream[Velocity] =  Stream.periodic(Milliseconds(10)) {
+  override val rightVelocity: Stream[Velocity] =  Stream.periodic(period) {
     rightEncoder.getAngularVelocity onRadius wheelRadius
   }(WPIClock)
 
+  // test with true and false
+  val isFrameRateSetTo1ms = false
+  if (isFrameRateSetTo1ms) {
+    println("setting status frame rate to 1 ms")
+    leftFront.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 10)
+  }
+  println(s"cur frame rate is ${leftFront.getStatusFramePeriod(StatusFrameEnhanced, 10)}")
 
-  override val leftPosition: Stream[Length] =  Stream.periodic(Milliseconds(10)) {
-    leftEncoder.getAngle onRadius wheelRadius
+  val writer = new PrintWriter(new File(s"encoder angle period: ${period.toMilliseconds} frame rate changed: $isFrameRateSetTo1ms.csv"))
+  writer.println("time (ms), angle 1 (deg), angle 2(deg)")
+
+
+  override val leftPosition: Stream[Length] = Stream.periodic(period) {
+    val angle = leftEncoder.getAngle
+    val ret = angle onRadius wheelRadius
+
+    writer.println(s"${WPIClock.currentTime.toMilliseconds}, ${angle.toDegrees} ${leftEncoder.getAngle.toDegrees}")
+    ret
   }(WPIClock)
-  override val rightPosition: Stream[Length] = Stream.periodic(Milliseconds(10)) {
+
+  override val rightPosition: Stream[Length] = Stream.periodic(period) {
     rightEncoder.getAngle onRadius wheelRadius
   }(WPIClock)
 
