@@ -45,7 +45,7 @@ class DrivetrainHardware extends TwoSidedDriveHardware {
     println("setting status frame rate to 1 ms")
     leftFront.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 10)
   }
-  println(s"cur frame rate is ${leftFront.getStatusFramePeriod(StatusFrameEnhanced, 10)}")
+  println(s"cur frame rate is ${leftFront.getStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10)}")
 
   val writer = new PrintWriter(new File(s"encoder angle period: ${period.toMilliseconds} frame rate changed: $isFrameRateSetTo1ms.csv"))
   writer.println("time (ms), angle 1 (deg), angle 2(deg)")
