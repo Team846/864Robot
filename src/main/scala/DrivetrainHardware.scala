@@ -13,6 +13,10 @@ import squants.{Each, Length, Velocity}
 class DrivetrainHardware extends TwoSidedDriveHardware {
   // Test with 1 and 10 ms
   val period = Milliseconds(10)
+  // test with true and false
+  val isFrameRateSetTo1ms = false
+
+  // ............................
 
   val leftFront = new TalonSRX(10) //TalonController
   val rightFront = new TalonSRX(12)
@@ -37,8 +41,6 @@ class DrivetrainHardware extends TwoSidedDriveHardware {
     rightEncoder.getAngularVelocity onRadius wheelRadius
   }(WPIClock)
 
-  // test with true and false
-  val isFrameRateSetTo1ms = false
   if (isFrameRateSetTo1ms) {
     println("setting status frame rate to 1 ms")
     leftFront.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 10)
