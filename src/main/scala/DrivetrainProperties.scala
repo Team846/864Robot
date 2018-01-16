@@ -1,5 +1,6 @@
 import com.lynbrookrobotics.potassium.commons.drivetrain._
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedProperties
+import com.lynbrookrobotics.potassium.control.OffloadedSignal.{EscPositionGains, EscVelocityGains}
 import com.lynbrookrobotics.potassium.control.PIDConfig
 import com.lynbrookrobotics.potassium.units.GenericValue._
 import com.lynbrookrobotics.potassium.units.{Ratio, _}
@@ -48,4 +49,7 @@ class DrivetrainProperties extends OffloadedProperties {
 
   override val wheelToEncoderGearRatio: Ratio[Angle, Angle] = Ratio(Degrees(1), Degrees(2))
   override val wheelDiameter: Length = Inches(6)
+
+  override val escVelocityGains = EscVelocityGains(0.1, 0, 0, 0)
+  override val escPositionGains = EscPositionGains(1, 0, 0)
 }

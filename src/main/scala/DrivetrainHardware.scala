@@ -16,10 +16,10 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
   private val wheelRadius = props.wheelDiameter * 0.5
   override val track = Inches(21.75)
 
-  val left /*Back*/ = new TalonSRX(11)
-  val right /*Back*/ = new TalonSRX(13)
-  private val leftFront = new TalonSRX(10)
-  private val rightFront = new TalonSRX(12)
+  val left /*Back*/ = new TalonSRX(50)
+  val right /*Back*/ = new TalonSRX(41) // SWAPPED
+  private val leftFront = new TalonSRX(51)
+  private val rightFront = new TalonSRX(40) // SWAPPED
 
   val escTimeout = 10
   val escIdx = 0
@@ -37,8 +37,8 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
     it.configAllowableClosedloopError(escIdx, 1, escTimeout)
   }
 
-  leftFront.follow(left)
-  rightFront.follow(right)
+//  leftFront.follow(left)
+//  rightFront.follow(right)
 
   val leftEncoder = new TalonEncoder(left, Ratio(Degrees(360), Each(8192)))
   val rightEncoder = new TalonEncoder(right, Ratio(Degrees(360), Each(8192)))

@@ -1,13 +1,13 @@
 import com.lynbrookrobotics.potassium.Signal
 import com.lynbrookrobotics.potassium.clock.Clock
+import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSided
+import com.lynbrookrobotics.potassium.control.PositionControl
 import com.lynbrookrobotics.potassium.frc.WPIClock
 import com.lynbrookrobotics.potassium.streams._
 import drivetrain.Drivetrain
-import drivetrain.unicycleTasks._
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.hal.HAL
-import squants.Percent
-import squants.space.{Degrees, Inches}
+import squants.space.Radians
 import squants.time.Milliseconds
 
 class Robot864 extends RobotBase {
@@ -22,18 +22,19 @@ class Robot864 extends RobotBase {
 
     implicit val hardw: DrivetrainHardware = new DrivetrainHardware
 
-    val drivetrain = new Drivetrain
-
-    Stream.periodic(Milliseconds(100))(isAutonomous)
-      .eventWhen(identity)
-      .foreach(
-        new DriveDistanceStraight(
-          Inches(25),
-          Inches(1),
-          Degrees(5),
-          Percent(15)
-        )(drivetrain).toContinuous
+    val drivetrainComponent = new Drivetrain
+    drivetrainComponent.setController(Stream.periodic(Milliseconds(10)) {
+      TwoSided(
+        PositionControl(
+          props.escPositionGains,
+          Radians(6.28)
+        ),
+        PositionControl(
+          props.escPositionGains,
+          Radians(6.28)
+        )
       )
+    })
 
     while (true) m_ds.waitForData()
   }
