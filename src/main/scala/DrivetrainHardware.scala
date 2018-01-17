@@ -1,5 +1,5 @@
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.ctre.phoenix.motorcontrol.{FeedbackDevice, VelocityMeasPeriod}
+import com.ctre.phoenix.motorcontrol.{FeedbackDevice, NeutralMode, VelocityMeasPeriod}
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSidedDriveHardware
 import com.lynbrookrobotics.potassium.frc.TalonEncoder
@@ -37,8 +37,11 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
     it.configAllowableClosedloopError(escIdx, 1, escTimeout)
   }
 
-//  leftFront.follow(left)
-//  rightFront.follow(right)
+  leftFront.follow(left)
+  rightFront.follow(right)
+
+  left.setInverted(true)
+  leftFront.setInverted(true)
 
   val leftEncoder = new TalonEncoder(left, Ratio(Degrees(360), Each(8192)))
   val rightEncoder = new TalonEncoder(right, Ratio(Degrees(360), Each(8192)))

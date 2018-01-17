@@ -1,13 +1,12 @@
 import com.lynbrookrobotics.potassium.commons.drivetrain._
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedProperties
-import com.lynbrookrobotics.potassium.control.OffloadedSignal.{EscPositionGains, EscVelocityGains}
 import com.lynbrookrobotics.potassium.control.PIDConfig
 import com.lynbrookrobotics.potassium.units.GenericValue._
 import com.lynbrookrobotics.potassium.units.{Ratio, _}
-import squants.motion.{AngularVelocity, DegreesPerSecond, FeetPerSecond, FeetPerSecondSquared}
+import squants.motion._
 import squants.space.{Degrees, Feet, Inches}
-import squants.time.Seconds
-import squants.{Acceleration, Angle, Length, Percent, Velocity}
+import squants.time._
+import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Quantity, Time, Velocity}
 
 class DrivetrainProperties extends OffloadedProperties {
   override val maxLeftVelocity: Velocity = FeetPerSecond(21.9)
@@ -47,9 +46,11 @@ class DrivetrainProperties extends OffloadedProperties {
     Percent(0) / DegreesPerSecond(1)
   )
 
-  override val wheelToEncoderGearRatio: Ratio[Angle, Angle] = Ratio(Degrees(1), Degrees(2))
-  override val wheelDiameter: Length = Inches(6)
+  override protected val wheelToEncoderGearRatio: Ratio[Angle, Angle] = Ratio(Degrees(1), Degrees(2))
+  override protected val wheelDiameter: Length = Inches(6)
+  override protected val encoderTicksToAngleRatio: Ratio[Angle, Dimensionless] = Ratio(Degrees(360), Each(8192))
+  override val escTimeConst: Time = Milliseconds(100)
 
-  override val escVelocityGains = EscVelocityGains(0.1, 0, 0, 0)
-  override val escPositionGains = EscPositionGains(1, 0, 0)
+  override def floorToTicksRatio(): Ratio[Length, Dimensionless] =
+    Ratio(wheelDiameter * Math.PI, Degrees(360)) * wheelToEncoderGearRatio * encoderTicksToAngleRatio
 }
