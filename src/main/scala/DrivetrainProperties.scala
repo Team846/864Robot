@@ -4,53 +4,41 @@ import com.lynbrookrobotics.potassium.control.PIDConfig
 import com.lynbrookrobotics.potassium.units.GenericValue._
 import com.lynbrookrobotics.potassium.units.{Ratio, _}
 import squants.motion._
-import squants.space.{Degrees, Feet, Inches}
+import squants.space.{Feet, Inches, Turns}
 import squants.time._
-import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Quantity, Time, Velocity}
+import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Time, Velocity}
 
 class DrivetrainProperties extends OffloadedProperties {
-  override val maxLeftVelocity: Velocity = FeetPerSecond(21.9)
-  override val maxRightVelocity: Velocity = FeetPerSecond(23.1)
+  override val maxLeftVelocity: Velocity = FeetPerSecond(18.5)
+  override val maxRightVelocity: Velocity = FeetPerSecond(18.4)
 
   override val leftVelocityGains: ForwardVelocityGains = PIDConfig(
-    Ratio(Percent(30), FeetPerSecond(5)),
-    Ratio(Percent(0), Feet(1)),
-    Ratio(Percent(0), FeetPerSecondSquared(1))
+    Ratio(Percent(0), FeetPerSecond(5)),
+    Ratio(Percent(0), Feet(5)),
+    Ratio(Percent(0), FeetPerSecondSquared(5))
   )
 
-  override val rightVelocityGains: ForwardVelocityGains = PIDConfig(
-    Ratio(Percent(30), FeetPerSecond(5)),
-    Ratio(Percent(0), Feet(1)),
-    Ratio(Percent(0), FeetPerSecondSquared(1))
-  )
+  override val rightVelocityGains: ForwardVelocityGains = leftVelocityGains
 
-  override val maxTurnVelocity: AngularVelocity = DegreesPerSecond(15)
-  override val maxAcceleration: Acceleration = FeetPerSecondSquared(4)
+  override val maxTurnVelocity: AngularVelocity = null
+  override val maxAcceleration: Acceleration = null
   override val defaultLookAheadDistance: Length = Feet(2)
 
-  override val turnControlGains: TurnVelocityGains = PIDConfig(
-    Ratio(Percent(50), DegreesPerSecond(360)),
-    Ratio(Percent(0), Degrees(1)),
-    Percent(0) / (DegreesPerSecond(1).toGeneric / Seconds(1))
-  )
+  override val turnControlGains: TurnVelocityGains = null
 
   override val forwardPositionGains: ForwardPositionGains = PIDConfig(
-    Percent(100) / Feet(2),
-    Percent(0) / (Feet(1).toGeneric * Seconds(1)),
-    Percent(0) / FeetPerSecond(1)
+    Percent(0) / Feet(5),
+    Percent(0) / (Feet(5) * Seconds(1)),
+    Percent(0) / FeetPerSecond(5)
   )
 
-  override val turnPositionGains: TurnPositionGains = PIDConfig(
-    Percent(100) / Degrees(90),
-    Percent(0) / (Degrees(1).toGeneric * Seconds(1)),
-    Percent(0) / DegreesPerSecond(1)
-  )
+  override val turnPositionGains: TurnPositionGains = null
 
-  override protected val wheelToEncoderGearRatio: Ratio[Angle, Angle] = Ratio(Degrees(1), Degrees(2))
-  override protected val wheelDiameter: Length = Inches(6)
-  override protected val encoderTicksToAngleRatio: Ratio[Angle, Dimensionless] = Ratio(Degrees(360), Each(8192))
+  val escIdx = 0
+  val escTout = 3
   override val escTimeConst: Time = Milliseconds(100)
-
-  override def floorToTicksRatio(): Ratio[Length, Dimensionless] =
-    Ratio(wheelDiameter * Math.PI, Degrees(360)) * wheelToEncoderGearRatio * encoderTicksToAngleRatio
+  override val wheelDiameter: Length = Inches(4)
+  override val wheelOverEncoderGears: Ratio[Angle, Angle] = Ratio(Turns(1), Turns(2))
+  override val encoderAngleOverTicks: Ratio[Angle, Dimensionless] = Ratio(Turns(1), Each(4096))
+  override val escNativeOutputOverPercent: Ratio[Dimensionless, Dimensionless] = Ratio(Each(1023), Percent(100))
 }

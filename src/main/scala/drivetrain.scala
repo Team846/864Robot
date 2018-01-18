@@ -1,17 +1,16 @@
 import java.util.InputMismatchException
 
-import com.ctre.phoenix.motorcontrol.{ControlMode, NeutralMode}
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.commons.drivetrain.NoOperation
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedDrive
 import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSided
+import com.lynbrookrobotics.potassium.control.OffloadedSignal.{EscPositionGains, EscVelocityGains}
 import com.lynbrookrobotics.potassium.control.{OffloadedSignal, OpenLoop, PositionControl, VelocityControl}
 import com.lynbrookrobotics.potassium.streams._
-import com.lynbrookrobotics.potassium.units.Ratio
 import com.lynbrookrobotics.potassium.{Component, Signal}
-import squants.motion.AngularVelocity
-import squants.time.{Hours, Milliseconds}
-import squants.{Angle, Dimensionless, Percent, Time}
+import squants.Percent
 
 package object drivetrain extends OffloadedDrive {
   self =>
@@ -20,10 +19,8 @@ package object drivetrain extends OffloadedDrive {
 
   // TODO: This method is huge, refactor in 3 separate methods
   override protected def output(h: Hardware, s: TwoSided[OffloadedSignal]): Unit = {
-    println("HERE")
-
-    h.left.setNeutralMode(NeutralMode.Coast)
-    h.right.setNeutralMode(NeutralMode.Coast)
+    val tOut = 0
+    val idx = 0
 
     s match {
       case TwoSided(OpenLoop(ls), OpenLoop(rs)) =>
@@ -31,51 +28,55 @@ package object drivetrain extends OffloadedDrive {
         h.right.set(ControlMode.PercentOutput, rs.toEach)
 
       case TwoSided(PositionControl(lg, ls), PositionControl(rg, rs)) =>
-        import h.{escIdx, escTimeout, left, right}
-        left.config_kP(escIdx, lg.p, escTimeout)
-        left.config_kI(escIdx, lg.i, escTimeout)
-        left.config_kD(escIdx, lg.d, escTimeout)
-
-        right.config_kP(escIdx, rg.p, escTimeout)
-        right.config_kI(escIdx, rg.i, escTimeout)
-        right.config_kD(escIdx, rg.d, escTimeout)
+        import h.{left, leftFollower, right, rightFollower}
+        set(left, idx, tOut, lg)
+        set(leftFollower, idx, tOut, lg)
+        set(right, idx, tOut, rg)
+        set(rightFollower, idx, tOut, rg)
 
         left.set(ControlMode.Position, ls.toEach)
         right.set(ControlMode.Position, rs.toEach)
 
-        println(s"lg: $lg")
-        println(s"ls: $ls")
-        println(h.rightEncoder)
-
       case TwoSided(VelocityControl(lg, ls), VelocityControl(rg, rs)) =>
-        import h.{escIdx, escTimeout, left, right}
-        left.config_kP(escIdx, lg.p, escTimeout)
-        left.config_kI(escIdx, lg.i, escTimeout)
-        left.config_kD(escIdx, lg.d, escTimeout)
-        left.config_kF(escIdx, lg.f, escTimeout)
-
-        right.config_kP(escIdx, rg.p, escTimeout)
-        right.config_kI(escIdx, rg.i, escTimeout)
-        right.config_kD(escIdx, rg.d, escTimeout)
-        right.config_kF(escIdx, rg.f, escTimeout)
+        import h.{left, leftFollower, right, rightFollower}
+        set(left, idx, tOut, lg)
+        set(leftFollower, idx, tOut, lg)
+        set(right, idx, tOut, rg)
+        set(rightFollower, idx, tOut, rg)
 
         left.set(ControlMode.Velocity, ls.toEach)
         right.set(ControlMode.Velocity, rs.toEach)
-
-        println(s"LG: $lg")
-        println(s"LS: $ls")
 
       case _ => throw new InputMismatchException(s"signal is of an awkward type: $s")
     }
   }
 
+  private def set(esc: TalonSRX, idx: Int, tOut: Int, g: EscVelocityGains): Unit = {
+    import g._
+    esc.config_kP(idx, p, tOut)
+    esc.config_kI(idx, i, tOut)
+    esc.config_kD(idx, d, tOut)
+    esc.config_kF(idx, f, tOut)
+  }
+
+  private def set(esc: TalonSRX, idx: Int, tOut: Int, g: EscPositionGains): Unit = {
+    import g._
+    esc.config_kP(idx, p, tOut)
+    esc.config_kI(idx, i, tOut)
+    esc.config_kD(idx, d, tOut)
+  }
+
   override protected def getControlMode(implicit hardware: Hardware, props: Properties) = NoOperation
 
-  class Drivetrain(implicit hardware: Hardware, props: Signal[Properties], clock: Clock) extends Component[DriveSignal] {
-    override def defaultController: Stream[TwoSided[OffloadedSignal]] = Stream.periodic(Milliseconds(20)) {
+  class Drivetrain(implicit hardware: Hardware,
+                   props: Signal[Properties],
+                   clock: Clock,
+                   coreTicks: Stream[_]) extends Component[DriveSignal] {
+    override def defaultController: Stream[TwoSided[OffloadedSignal]] = coreTicks.map { _ =>
       TwoSided(OpenLoop(Percent(0)), OpenLoop(Percent(0)))
     }
 
     override def applySignal(signal: TwoSided[OffloadedSignal]) = output(hardware, signal)
   }
+
 }
