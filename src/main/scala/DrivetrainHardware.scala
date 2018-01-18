@@ -12,7 +12,7 @@ import squants.{Each, Length, Velocity}
 
 class DrivetrainHardware(implicit clock: Clock) {
   // Test with 1 and 10 ms
-  val period = Milliseconds(1)
+  val period = Milliseconds(10)
   // test with true and false
   val isFrameRateSetTo1ms = true
 
@@ -41,7 +41,9 @@ class DrivetrainHardware(implicit clock: Clock) {
 
   if (isFrameRateSetTo1ms) {
     println("setting status frame rate to 1 ms")
-    leftFront.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 10)
+    leftBack.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 100)
+    leftBack.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1, 100)
+    leftBack.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1, 100)
   }
   println(s"cur frame rate is ${leftFront.getStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10)}")
 
