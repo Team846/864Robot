@@ -14,10 +14,10 @@ class Drivetrain(implicit hardware: DrivetrainHardware, clock: Clock) extends Co
   }
 
   override def applySignal(signal: (Double, Double)): Unit = {
-    hardware.leftFront.set(ControlMode.PercentOutput, signal._1)
-    hardware.leftBack.set(ControlMode.PercentOutput, signal._1)
+    hardware.leftFollower.set(ControlMode.PercentOutput, signal._1)
+    hardware.left.set(ControlMode.PercentOutput, signal._1)
 
-    hardware.rightFront.set(ControlMode.PercentOutput, -signal._2)
-    hardware.rightBack.set(ControlMode.PercentOutput, -signal._2)
+    hardware.right.set(ControlMode.PercentOutput, -signal._2)
+    hardware.rightFollower.set(ControlMode.PercentOutput, -signal._2)
   }
 }
