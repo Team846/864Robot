@@ -42,11 +42,16 @@ class Robot864 extends RobotBase {
       it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, escTout)
       it.configVelocityMeasurementWindow(32, escTout)
     }
+
+    // 846 DRIVE
+    Set(hard.left, hard.right).foreach { it =>
+      it.setStatusFramePeriod(Status_2_Feedback0, 2, escTout)
+      it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)
+      it.configVelocityMeasurementWindow(4, escTout)
+    }
   }
 
   override def startCompetition(): Unit = {
-    HAL.observeUserProgramStarting()
-
     implicit val clock: Clock = WPIClock
     implicit val coreTicks: Stream[_] = Stream.periodic(Milliseconds(5))(Unit)
 
@@ -59,7 +64,7 @@ class Robot864 extends RobotBase {
     val drivetrainComponent = new Drivetrain
     drivetrainComponent.resetToDefault()
 
-    val target = FeetPerSecond(15)
+    val target = FeetPerSecond(7)
     drivetrainComponent.setController(drivetrain.velocityControl(coreTicks.map { _ =>
       TwoSided(target, target)
     }))
@@ -79,6 +84,7 @@ class Robot864 extends RobotBase {
         }
       }
 
+    HAL.observeUserProgramStarting()
     while (true) m_ds.waitForData()
   }
 }
