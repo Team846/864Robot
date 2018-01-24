@@ -17,43 +17,24 @@ class Robot864 extends RobotBase {
   def escConfig(implicit props: DrivetrainProperties, hard: DrivetrainHardware): Unit = {
     println("Configuring TalonSRXs")
 
-    // 254 DEFAULT
     import hard.{escIdx, escTout}
     hard.left.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
     hard.right.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
 
     import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced._
-    Set(hard.left, hard.right).foreach { it =>
-      it.setStatusFramePeriod(Status_10_MotionMagic, 100, escTout)
-      it.setStatusFramePeriod(Status_1_General, 5, escTout)
-      it.setStatusFramePeriod(Status_2_Feedback0, 100, escTout)
-      it.setStatusFramePeriod(Status_12_Feedback1, 100, escTout)
-      it.setStatusFramePeriod(Status_3_Quadrature, 100, escTout)
-    }
-
     StatusFrame.values().foreach { it =>
+      hard.right.setStatusFramePeriod(it, 1000, escTout)
+      hard.left.setStatusFramePeriod(it, 1000, escTout)
       hard.rightFollower.setStatusFramePeriod(it, 1000, escTout)
       hard.leftFollower.setStatusFramePeriod(it, 1000, escTout)
     }
 
-    // 254 DRIVE
     Set(hard.left, hard.right).foreach { it =>
-      it.setStatusFramePeriod(Status_2_Feedback0, 5, escTout)
-      it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, escTout)
-      it.configVelocityMeasurementWindow(32, escTout)
-    }
-
-    // 846 DRIVE
-    Set(hard.left, hard.right).foreach { it =>
+      it.setStatusFramePeriod(Status_1_General, 5, escTout)
       it.setStatusFramePeriod(Status_2_Feedback0, 10, escTout)
+
       it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)
       it.configVelocityMeasurementWindow(4, escTout)
-    }
-    Set(hard.left, hard.right).foreach { it =>
-      it.setStatusFramePeriod(Status_10_MotionMagic, 1000, escTout)
-      it.setStatusFramePeriod(Status_1_General, 5, escTout)
-      it.setStatusFramePeriod(Status_12_Feedback1, 1000, escTout)
-      it.setStatusFramePeriod(Status_3_Quadrature, 1000, escTout)
     }
   }
 
