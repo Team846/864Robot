@@ -19,7 +19,7 @@ class DrivetrainProperties extends OffloadedProperties {
   override val maxRightVelocity: Velocity = FeetPerSecond(18.4)
 
   override val leftVelocityGains: ForwardVelocityGains = PIDConfig(
-    Ratio(Percent(20), FeetPerSecond(5)),
+    Ratio(Percent(50), FeetPerSecond(5)),
     Ratio(Percent(0), Feet(5)),
     Ratio(Percent(0), FeetPerSecondSquared(5))
   )
