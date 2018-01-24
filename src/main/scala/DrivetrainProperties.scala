@@ -1,3 +1,4 @@
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.lynbrookrobotics.potassium.commons.drivetrain._
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedProperties
 import com.lynbrookrobotics.potassium.control.PIDConfig
@@ -9,22 +10,20 @@ import squants.time._
 import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Time, Velocity}
 
 class DrivetrainProperties extends OffloadedProperties {
+  val leftPort /*Back*/ = 50
+  val rightPort /*Back*/ = 41
+  val leftFollowerPort /*Front*/ = 51
+  val rightFollowerPort /*Front*/ = 40
+
   override val maxLeftVelocity: Velocity = FeetPerSecond(18.5)
   override val maxRightVelocity: Velocity = FeetPerSecond(18.4)
 
   override val leftVelocityGains: ForwardVelocityGains = PIDConfig(
-    Ratio(Percent(0), FeetPerSecond(5)),
+    Ratio(Percent(5), FeetPerSecond(5)),
     Ratio(Percent(0), Feet(5)),
     Ratio(Percent(0), FeetPerSecondSquared(5))
   )
-
   override val rightVelocityGains: ForwardVelocityGains = leftVelocityGains
-
-  override val maxTurnVelocity: AngularVelocity = null
-  override val maxAcceleration: Acceleration = null
-  override val defaultLookAheadDistance: Length = Feet(2)
-
-  override val turnControlGains: TurnVelocityGains = null
 
   override val forwardPositionGains: ForwardPositionGains = PIDConfig(
     Percent(0) / Feet(5),
@@ -32,10 +31,12 @@ class DrivetrainProperties extends OffloadedProperties {
     Percent(0) / FeetPerSecond(5)
   )
 
+  override val turnControlGains: TurnVelocityGains = null
   override val turnPositionGains: TurnPositionGains = null
+  override val maxTurnVelocity: AngularVelocity = null
+  override val maxAcceleration: Acceleration = null
+  override val defaultLookAheadDistance: Length = null
 
-  val escIdx = 0
-  val escTout = 3
   override val escTimeConst: Time = Milliseconds(100)
   override val wheelDiameter: Length = Inches(4)
   override val wheelOverEncoderGears: Ratio[Angle, Angle] = Ratio(Turns(1), Turns(2))

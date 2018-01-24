@@ -19,30 +19,26 @@ package object drivetrain extends OffloadedDrive {
 
   // TODO: This method is huge, refactor in 3 separate methods
   override protected def output(h: Hardware, s: TwoSided[OffloadedSignal]): Unit = {
-    val tOut = 0
-    val idx = 0
-
+    import h._
     s match {
       case TwoSided(OpenLoop(ls), OpenLoop(rs)) =>
         h.left.set(ControlMode.PercentOutput, ls.toEach)
         h.right.set(ControlMode.PercentOutput, rs.toEach)
 
       case TwoSided(PositionControl(lg, ls), PositionControl(rg, rs)) =>
-        import h.{left, leftFollower, right, rightFollower}
-        set(left, idx, tOut, lg)
-        set(leftFollower, idx, tOut, lg)
-        set(right, idx, tOut, rg)
-        set(rightFollower, idx, tOut, rg)
+        set(left, escIdx, escTout, lg)
+        set(leftFollower, escIdx, escTout, lg)
+        set(right, escIdx, escTout, rg)
+        set(rightFollower, escIdx, escTout, rg)
 
         left.set(ControlMode.Position, ls.toEach)
         right.set(ControlMode.Position, rs.toEach)
 
       case TwoSided(VelocityControl(lg, ls), VelocityControl(rg, rs)) =>
-        import h.{left, leftFollower, right, rightFollower}
-        set(left, idx, tOut, lg)
-        set(leftFollower, idx, tOut, lg)
-        set(right, idx, tOut, rg)
-        set(rightFollower, idx, tOut, rg)
+        set(left, escIdx, escTout, lg)
+        set(leftFollower, escIdx, escTout, lg)
+        set(right, escIdx, escTout, rg)
+        set(rightFollower, escIdx, escTout, rg)
 
         left.set(ControlMode.Velocity, ls.toEach)
         right.set(ControlMode.Velocity, rs.toEach)

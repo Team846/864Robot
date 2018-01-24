@@ -16,33 +16,30 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
 
   override val track = Inches(21.75)
 
-  val left /*Back*/ = new TalonSRX(50)
-  val right /*Back*/ = new TalonSRX(41)
-  val leftFollower /*Front*/ = new TalonSRX(51)
-  val rightFollower /*Front*/ = new TalonSRX(40)
-
   import props._
 
+  val left /*Back*/ = new TalonSRX(leftPort)
+  val right /*Back*/ = new TalonSRX(rightPort)
+  val leftFollower /*Front*/ = new TalonSRX(leftFollowerPort)
+  val rightFollower /*Front*/ = new TalonSRX(rightFollowerPort)
+
+  val escIdx = 0
+  val escTout = 0
+  
   Set(left, right, leftFollower, rightFollower).foreach { it =>
-    it.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
-    it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)
-    it.configVelocityMeasurementWindow(3, escTout)
+    it.setNeutralMode(NeutralMode.Coast)
+    it.configOpenloopRamp(0, escTout)
+    it.configClosedloopRamp(0, escTout)
 
     it.configPeakOutputReverse(-1, escTout)
     it.configNominalOutputReverse(0, escTout)
     it.configNominalOutputForward(0, escTout)
     it.configPeakOutputForward(1, escTout)
 
-    it.configAllowableClosedloopError(escIdx, 0, escTout)
-    it.setSelectedSensorPosition(0, escIdx, escTout)
-    it.setNeutralMode(NeutralMode.Coast)
-
-    it.configVoltageCompSaturation(12, escTout)
+    it.configNeutralDeadband(0.001 /*min*/ , escTout)
+    it.configVoltageCompSaturation(11, escTout)
+    it.configVoltageMeasurementFilter(1, escTout)
     it.enableVoltageCompensation(false)
-
-    it.configContinuousCurrentLimit(40, escTout)
-    it.configPeakCurrentDuration(0, escTout)
-    it.enableCurrentLimit(false)
 
     import StatusFrameEnhanced._
     Map(
@@ -59,17 +56,12 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
   leftFollower.follow(left)
   rightFollower.follow(right)
 
-  left.setInverted(false)
-  leftFollower.setInverted(false)
-  right.setInverted(false)
-  rightFollower.setInverted(false)
+  right.setInverted(true)
+  rightFollower.setInverted(true)
+  right.setSensorPhase(false)
 
-  val leftEncoder = new TalonEncoder(left, props.encoderAngleOverTicks)
-  val rightEncoder = new TalonEncoder(right, props.encoderAngleOverTicks)
-  left.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, escTout)
-  right.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, escTout)
-  left.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, escTout)
-  right.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, escTout)
+  val leftEncoder = new TalonEncoder(left, encoderAngleOverTicks)
+  val rightEncoder = new TalonEncoder(right, encoderAngleOverTicks)
 
   private val t = Seconds(1)
   override val leftVelocity: Stream[Velocity] = coreTicks.map { _ =>
