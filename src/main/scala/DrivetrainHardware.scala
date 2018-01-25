@@ -1,45 +1,84 @@
-import com.ctre.CANTalon
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.lynbrookrobotics.potassium.commons.drivetrain.TwoSidedDriveHardware
-import com.lynbrookrobotics.potassium.frc.{TalonEncoder, WPIClock}
+import com.ctre.phoenix.motorcontrol.{FeedbackDevice, NeutralMode, StatusFrameEnhanced, VelocityMeasPeriod}
+import com.lynbrookrobotics.potassium.clock.Clock
+import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSidedDriveHardware
+import com.lynbrookrobotics.potassium.frc.TalonEncoder
 import com.lynbrookrobotics.potassium.streams._
 import com.lynbrookrobotics.potassium.units.Ratio
-import squants.motion.MetersPerSecond
-import squants.space.{Degrees, Feet, Inches, Meters}
-import squants.time.{Milliseconds, Seconds}
-import squants.{Each, Length, Velocity}
+import squants.space.Inches
+import squants.time.Seconds
+import squants.{Length, Velocity}
 
-class DrivetrainHardware extends TwoSidedDriveHardware {
-  val leftFront = new TalonSRX(10) //TalonController
-  val rightFront = new TalonSRX(12)
-  val leftBack = new TalonSRX(11)
-  val rightBack = new TalonSRX(13)
+class DrivetrainHardware(implicit props: DrivetrainProperties,
+                         clock: Clock,
+                         coreTicks: Stream[_])
+  extends TwoSidedDriveHardware {
 
-  leftFront.follow(leftBack)
-  rightFront.follow(rightBack)
+  override val track = Inches(21.75)
 
-  val clock = WPIClock
+  import props._
 
-  val leftEncoder = new TalonEncoder(leftBack, Ratio(Degrees(360), Each(8192)))
-  val rightEncoder = new TalonEncoder(rightBack, Ratio(Degrees(360), Each(8192)))
+  val left /*Back*/ = new TalonSRX(leftPort)
+  val right /*Back*/ = new TalonSRX(rightPort)
+  val leftFollower /*Front*/ = new TalonSRX(leftFollowerPort)
+  val rightFollower /*Front*/ = new TalonSRX(rightFollowerPort)
 
-  val wheelRadius = Inches(3)
+  val escIdx = 0
+  val escTout = 0
+  
+  Set(left, right, leftFollower, rightFollower).foreach { it =>
+    it.setNeutralMode(NeutralMode.Coast)
+    it.configOpenloopRamp(0, escTout)
+    it.configClosedloopRamp(0, escTout)
 
-  override val leftVelocity: Stream[Velocity] = Stream.periodic(Milliseconds(10)) {
-    leftEncoder.getAngularVelocity onRadius wheelRadius
-  }(WPIClock)
+    it.configPeakOutputReverse(-1, escTout)
+    it.configNominalOutputReverse(0, escTout)
+    it.configNominalOutputForward(0, escTout)
+    it.configPeakOutputForward(1, escTout)
 
-  override val rightVelocity: Stream[Velocity] =  Stream.periodic(Milliseconds(10)) {
-    rightEncoder.getAngularVelocity onRadius wheelRadius
-  }(WPIClock)
+    it.configNeutralDeadband(0.001 /*min*/ , escTout)
+    it.configVoltageCompSaturation(11, escTout)
+    it.configVoltageMeasurementFilter(1, escTout)
+    it.enableVoltageCompensation(false)
 
+    import StatusFrameEnhanced._
+    Map(
+      Status_1_General -> 10,
+      Status_2_Feedback0 -> 20,
+      Status_12_Feedback1 -> 20,
+      Status_3_Quadrature -> 100,
+      Status_4_AinTempVbat -> 100
+    ).foreach { case (frame, period) =>
+      it.setStatusFramePeriod(frame, period, escTout)
+    }
+  }
 
-  override val leftPosition: Stream[Length] =  Stream.periodic(Milliseconds(10)) {
-    leftEncoder.getAngle onRadius wheelRadius
-  }(WPIClock)
-  override val rightPosition: Stream[Length] = Stream.periodic(Milliseconds(10)) {
-    rightEncoder.getAngle onRadius wheelRadius
-  }(WPIClock)
+  leftFollower.follow(left)
+  rightFollower.follow(right)
 
-  override val track: Length = Feet(2.5)
+  right.setInverted(true)
+  rightFollower.setInverted(true)
+  right.setSensorPhase(false)
+
+  val leftEncoder = new TalonEncoder(left, encoderAngleOverTicks)
+  val rightEncoder = new TalonEncoder(right, encoderAngleOverTicks)
+
+  private val t = Seconds(1)
+  override val leftVelocity: Stream[Velocity] = coreTicks.map { _ =>
+    val x = wheelOverEncoderGears * Ratio(leftEncoder.getAngularVelocity * t, t)
+    (x.num / x.den) onRadius (wheelDiameter / 2)
+  }
+
+  override val rightVelocity: Stream[Velocity] = coreTicks.map { _ =>
+    val x = wheelOverEncoderGears * Ratio(rightEncoder.getAngularVelocity * t, t)
+    (x.num / x.den) onRadius (wheelDiameter / 2)
+  }
+
+  override val leftPosition: Stream[Length] = coreTicks.map { _ =>
+    (wheelOverEncoderGears * leftEncoder.getAngle) onRadius (wheelDiameter / 2)
+  }
+
+  override val rightPosition: Stream[Length] = coreTicks.map { _ =>
+    (wheelOverEncoderGears * rightEncoder.getAngle) onRadius (wheelDiameter / 2)
+  }
 }

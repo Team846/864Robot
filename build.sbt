@@ -3,6 +3,7 @@ enablePlugins(FRCPlugin)
 name := "864Robot"
 
 version := "0.1"
+offline := true
 
 scalaVersion := "2.12.4"
 
@@ -13,7 +14,7 @@ resolvers += "opencv-maven" at "http://first.wpi.edu/FRC/roborio/maven/developme
 organization := "com.lynbrookrobotics"
 teamNumber := 846
 
-val potassiumVersion = "0.1.0-4bed1805" //6e56dd98
+val potassiumVersion = "0.1.0-aac1d718"
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-core" % potassiumVersion
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-commons" % potassiumVersion
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-frc" % potassiumVersion
