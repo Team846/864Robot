@@ -1,22 +1,22 @@
-import com.ctre.CANTalon
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.lynbrookrobotics.potassium.commons.drivetrain.TwoSidedDriveHardware
-import com.lynbrookrobotics.potassium.frc.{TalonEncoder, WPIClock}
+import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSidedDriveHardware
+import com.lynbrookrobotics.potassium.frc.{TalonController, TalonEncoder, WPIClock}
 import com.lynbrookrobotics.potassium.streams._
 import com.lynbrookrobotics.potassium.units.Ratio
-import squants.motion.MetersPerSecond
-import squants.space.{Degrees, Feet, Inches, Meters}
-import squants.time.{Milliseconds, Seconds}
+import squants.space.{Degrees, Feet, Inches}
+import squants.time.Milliseconds
 import squants.{Each, Length, Velocity}
 
 class DrivetrainHardware extends TwoSidedDriveHardware {
-  val leftFront = new TalonSRX(10) //TalonController
-  val rightFront = new TalonSRX(12)
-  val leftBack = new TalonSRX(11)
-  val rightBack = new TalonSRX(13)
+  val leftFront = new TalonController(51) //TalonController
+  val rightFront = new TalonController(40)
+  val leftBack = new TalonController(50)
+  val rightBack = new TalonController(41)
 
   leftFront.follow(leftBack)
   rightFront.follow(rightBack)
+
+  leftBack.talon.setInverted(true)
+  leftFront.talon.setInverted(true)
 
   val clock = WPIClock
 
@@ -25,21 +25,23 @@ class DrivetrainHardware extends TwoSidedDriveHardware {
 
   val wheelRadius = Inches(3)
 
-  override val leftVelocity: Stream[Velocity] = Stream.periodic(Milliseconds(10)) {
+  val core = Stream.periodic(Milliseconds(10))(())(clock)
+
+  override val leftVelocity: Stream[Velocity] = core.map { _ =>
     leftEncoder.getAngularVelocity onRadius wheelRadius
-  }(WPIClock)
+  }
 
-  override val rightVelocity: Stream[Velocity] =  Stream.periodic(Milliseconds(10)) {
+  override val rightVelocity: Stream[Velocity] = core.map { _ =>
     rightEncoder.getAngularVelocity onRadius wheelRadius
-  }(WPIClock)
+  }
 
-
-  override val leftPosition: Stream[Length] =  Stream.periodic(Milliseconds(10)) {
+  override val leftPosition: Stream[Length] = core.map { _ =>
     leftEncoder.getAngle onRadius wheelRadius
-  }(WPIClock)
-  override val rightPosition: Stream[Length] = Stream.periodic(Milliseconds(10)) {
+  }
+
+  override val rightPosition: Stream[Length] = core.map { _ =>
     rightEncoder.getAngle onRadius wheelRadius
-  }(WPIClock)
+  }
 
   override val track: Length = Feet(2.5)
 }
