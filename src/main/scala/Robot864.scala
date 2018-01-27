@@ -30,7 +30,7 @@ class Robot864 extends RobotBase {
     }
 
     Set(hard.left, hard.right).foreach { it =>
-      it.t.setStatusFramePeriod(Status_1_General, 10, escTout)
+      it.t.setStatusFramePeriod(Status_1_General, 5, escTout)
       it.t.setStatusFramePeriod(Status_2_Feedback0, 10, escTout)
 
       it.t.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)

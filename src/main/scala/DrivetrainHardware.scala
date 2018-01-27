@@ -43,6 +43,10 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
       it.configVoltageMeasurementFilter(32, escTout)
       it.enableVoltageCompensation(true)
 
+      it.configContinuousCurrentLimit(131, escTout)
+      it.configPeakCurrentDuration(0, escTout)
+      it.enableCurrentLimit(false)
+
       import StatusFrameEnhanced._
       Map(
         Status_1_General -> 10,
