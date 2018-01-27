@@ -15,8 +15,8 @@ class DrivetrainProperties extends OffloadedProperties {
   val leftFollowerPort /*Front*/ = 51
   val rightFollowerPort /*Front*/ = 40
 
-  override val maxLeftVelocity: Velocity = FeetPerSecond(18.5)
-  override val maxRightVelocity: Velocity = FeetPerSecond(18.4)
+  override val maxLeftVelocity: Velocity = FeetPerSecond(19.58) // average over 45 seconds with VComp @ 11 Volts/32 Window
+  override val maxRightVelocity: Velocity = FeetPerSecond(19.69) // average over 45 seconds with VComp @ 11 Volts/32 Window
 
   override val leftVelocityGains: ForwardVelocityGains = PIDConfig(
     Ratio(Percent(50), FeetPerSecond(5)),

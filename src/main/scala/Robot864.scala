@@ -18,23 +18,23 @@ class Robot864 extends RobotBase {
     println("Configuring TalonSRXs")
 
     import hard.{escIdx, escTout}
-    hard.left.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
-    hard.right.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
+    hard.left.t.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
+    hard.right.t.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, escIdx, escTout)
 
     import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced._
     StatusFrame.values().foreach { it =>
-      hard.right.setStatusFramePeriod(it, 1000, escTout)
-      hard.left.setStatusFramePeriod(it, 1000, escTout)
-      hard.rightFollower.setStatusFramePeriod(it, 1000, escTout)
-      hard.leftFollower.setStatusFramePeriod(it, 1000, escTout)
+      hard.right.t.setStatusFramePeriod(it, 1000, escTout)
+      hard.left.t.setStatusFramePeriod(it, 1000, escTout)
+      hard.rightFollower.t.setStatusFramePeriod(it, 1000, escTout)
+      hard.leftFollower.t.setStatusFramePeriod(it, 1000, escTout)
     }
 
     Set(hard.left, hard.right).foreach { it =>
-      it.setStatusFramePeriod(Status_1_General, 5, escTout)
-      it.setStatusFramePeriod(Status_2_Feedback0, 10, escTout)
+      it.t.setStatusFramePeriod(Status_1_General, 10, escTout)
+      it.t.setStatusFramePeriod(Status_2_Feedback0, 10, escTout)
 
-      it.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)
-      it.configVelocityMeasurementWindow(4, escTout)
+      it.t.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, escTout)
+      it.t.configVelocityMeasurementWindow(4, escTout)
     }
   }
 
@@ -51,7 +51,7 @@ class Robot864 extends RobotBase {
     val drivetrainComponent = new Drivetrain
     drivetrainComponent.resetToDefault()
 
-    val target = FeetPerSecond(7)
+    val target = FeetPerSecond(9)
     drivetrainComponent.setController(drivetrain.velocityControl(coreTicks.map { _ =>
       TwoSided(target, target)
     }))

@@ -1,8 +1,8 @@
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.ctre.phoenix.motorcontrol.{FeedbackDevice, NeutralMode, StatusFrameEnhanced, VelocityMeasPeriod}
+import com.ctre.phoenix.motorcontrol.{NeutralMode, StatusFrameEnhanced}
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSidedDriveHardware
-import com.lynbrookrobotics.potassium.frc.TalonEncoder
+import com.lynbrookrobotics.potassium.frc.{LazyTalon, TalonEncoder}
 import com.lynbrookrobotics.potassium.streams._
 import com.lynbrookrobotics.potassium.units.Ratio
 import squants.space.Inches
@@ -18,50 +18,52 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
 
   import props._
 
-  val left /*Back*/ = new TalonSRX(leftPort)
-  val right /*Back*/ = new TalonSRX(rightPort)
-  val leftFollower /*Front*/ = new TalonSRX(leftFollowerPort)
-  val rightFollower /*Front*/ = new TalonSRX(rightFollowerPort)
-
   val escIdx = 0
   val escTout = 0
-  
-  Set(left, right, leftFollower, rightFollower).foreach { it =>
-    it.setNeutralMode(NeutralMode.Coast)
-    it.configOpenloopRamp(0, escTout)
-    it.configClosedloopRamp(0, escTout)
 
-    it.configPeakOutputReverse(-1, escTout)
-    it.configNominalOutputReverse(0, escTout)
-    it.configNominalOutputForward(0, escTout)
-    it.configPeakOutputForward(1, escTout)
+  val left /*Back*/ = new LazyTalon(new TalonSRX(leftPort), escIdx, escTout)
+  val right /*Back*/ = new LazyTalon(new TalonSRX(rightPort), escIdx, escTout)
+  val leftFollower /*Front*/ = new LazyTalon(new TalonSRX(leftFollowerPort), escIdx, escTout)
+  val rightFollower /*Front*/ = new LazyTalon(new TalonSRX(rightFollowerPort), escIdx, escTout)
 
-    it.configNeutralDeadband(0.001 /*min*/ , escTout)
-    it.configVoltageCompSaturation(11, escTout)
-    it.configVoltageMeasurementFilter(1, escTout)
-    it.enableVoltageCompensation(false)
+  Set(left, right, leftFollower, rightFollower)
+    .map(_.t)
+    .foreach { it =>
+      it.setNeutralMode(NeutralMode.Coast)
+      it.configOpenloopRamp(0, escTout)
+      it.configClosedloopRamp(0, escTout)
 
-    import StatusFrameEnhanced._
-    Map(
-      Status_1_General -> 10,
-      Status_2_Feedback0 -> 20,
-      Status_12_Feedback1 -> 20,
-      Status_3_Quadrature -> 100,
-      Status_4_AinTempVbat -> 100
-    ).foreach { case (frame, period) =>
-      it.setStatusFramePeriod(frame, period, escTout)
+      it.configPeakOutputReverse(-1, escTout)
+      it.configNominalOutputReverse(0, escTout)
+      it.configNominalOutputForward(0, escTout)
+      it.configPeakOutputForward(1, escTout)
+      it.configNeutralDeadband(0.001 /*min*/ , escTout)
+
+      it.configVoltageCompSaturation(11, escTout)
+      it.configVoltageMeasurementFilter(32, escTout)
+      it.enableVoltageCompensation(true)
+
+      import StatusFrameEnhanced._
+      Map(
+        Status_1_General -> 10,
+        Status_2_Feedback0 -> 20,
+        Status_12_Feedback1 -> 20,
+        Status_3_Quadrature -> 100,
+        Status_4_AinTempVbat -> 100
+      ).foreach { case (frame, period) =>
+        it.setStatusFramePeriod(frame, period, escTout)
+      }
     }
-  }
 
-  leftFollower.follow(left)
-  rightFollower.follow(right)
+  leftFollower.t.follow(left.t)
+  rightFollower.t.follow(right.t)
 
-  right.setInverted(true)
-  rightFollower.setInverted(true)
-  right.setSensorPhase(false)
+  right.t.setInverted(true)
+  rightFollower.t.setInverted(true)
+  right.t.setSensorPhase(false)
 
-  val leftEncoder = new TalonEncoder(left, encoderAngleOverTicks)
-  val rightEncoder = new TalonEncoder(right, encoderAngleOverTicks)
+  val leftEncoder = new TalonEncoder(left.t, encoderAngleOverTicks)
+  val rightEncoder = new TalonEncoder(right.t, encoderAngleOverTicks)
 
   private val t = Seconds(1)
   override val leftVelocity: Stream[Velocity] = coreTicks.map { _ =>

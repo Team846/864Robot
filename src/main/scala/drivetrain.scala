@@ -1,6 +1,5 @@
 import java.util.InputMismatchException
 
-import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.commons.drivetrain.NoOperation
@@ -19,47 +18,8 @@ package object drivetrain extends OffloadedDrive {
 
   // TODO: This method is huge, refactor in 3 separate methods
   override protected def output(h: Hardware, s: TwoSided[OffloadedSignal]): Unit = {
-    import h._
-    s match {
-      case TwoSided(OpenLoop(ls), OpenLoop(rs)) =>
-        h.left.set(ControlMode.PercentOutput, ls.toEach)
-        h.right.set(ControlMode.PercentOutput, rs.toEach)
-
-      case TwoSided(PositionControl(lg, ls), PositionControl(rg, rs)) =>
-        set(left, escIdx, escTout, lg)
-        set(leftFollower, escIdx, escTout, lg)
-        set(right, escIdx, escTout, rg)
-        set(rightFollower, escIdx, escTout, rg)
-
-        left.set(ControlMode.Position, ls.toEach)
-        right.set(ControlMode.Position, rs.toEach)
-
-      case TwoSided(VelocityControl(lg, ls), VelocityControl(rg, rs)) =>
-        set(left, escIdx, escTout, lg)
-        set(leftFollower, escIdx, escTout, lg)
-        set(right, escIdx, escTout, rg)
-        set(rightFollower, escIdx, escTout, rg)
-
-        left.set(ControlMode.Velocity, ls.toEach)
-        right.set(ControlMode.Velocity, rs.toEach)
-
-      case _ => throw new InputMismatchException(s"signal is of an awkward type: $s")
-    }
-  }
-
-  private def set(esc: TalonSRX, idx: Int, tOut: Int, g: EscVelocityGains): Unit = {
-    import g._
-    esc.config_kP(idx, p, tOut)
-    esc.config_kI(idx, i, tOut)
-    esc.config_kD(idx, d, tOut)
-    esc.config_kF(idx, f, tOut)
-  }
-
-  private def set(esc: TalonSRX, idx: Int, tOut: Int, g: EscPositionGains): Unit = {
-    import g._
-    esc.config_kP(idx, p, tOut)
-    esc.config_kI(idx, i, tOut)
-    esc.config_kD(idx, d, tOut)
+    h.left(s.left)
+    h.right(s.right)
   }
 
   override protected def getControlMode(implicit hardware: Hardware, props: Properties) = NoOperation
