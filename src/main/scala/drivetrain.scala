@@ -18,11 +18,11 @@ package object drivetrain extends OffloadedDrive {
 
   // TODO: This method is huge, refactor in 3 separate methods
   override protected def output(h: Hardware, s: TwoSided[OffloadedSignal]): Unit = {
-    h.left(s.left)
-    h.right(s.right)
+    h.left.applyCommand(s.left)
+    h.right.applyCommand(s.right)
   }
 
-  override protected def getControlMode(implicit hardware: Hardware, props: Properties) = NoOperation
+  override protected def controlMode(implicit hardware: Hardware, props: Properties) = NoOperation
 
   class Drivetrain(implicit hardware: Hardware,
                    props: Signal[Properties],

@@ -31,11 +31,13 @@ class DrivetrainProperties extends OffloadedProperties {
     Percent(0) / FeetPerSecond(5)
   )
 
-  override val turnControlGains: TurnVelocityGains = null
+  override val turnVelocityGains: TurnVelocityGains = null
   override val turnPositionGains: TurnPositionGains = null
   override val maxTurnVelocity: AngularVelocity = null
   override val maxAcceleration: Acceleration = null
   override val defaultLookAheadDistance: Length = null
+  override val blendExponent: Double = 0
+  override val track: Length = null
 
   override val escTimeConst: Time = Milliseconds(100)
   override val wheelDiameter: Length = Inches(4)
