@@ -9,6 +9,7 @@ import com.lynbrookrobotics.potassium.streams._
 import drivetrain.Drivetrain
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.hal.HAL
+import squants.electro.Volts
 import squants.motion.FeetPerSecond
 import squants.time.Milliseconds
 
@@ -51,7 +52,7 @@ class Robot864 extends RobotBase {
     val drivetrainComponent = new Drivetrain
     drivetrainComponent.resetToDefault()
 
-    val target = FeetPerSecond(9)
+    val target = FeetPerSecond(15)
     drivetrainComponent.setController(drivetrain.velocityControl(coreTicks.map { _ =>
       TwoSided(target, target)
     }))
@@ -60,7 +61,7 @@ class Robot864 extends RobotBase {
     new File(logPath).delete()
     val logger = new PrintStream(logPath)
 
-    logger.println(s"dt (s)\tleft ft/s\tright ft/s")
+    logger.println(s"dt sec\tleft ft/s\tright ft/s")
     val cancel = hard.leftVelocity
       .zip(hard.rightVelocity)
       .zipWithDt
