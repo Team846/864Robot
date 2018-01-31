@@ -34,7 +34,8 @@ class Robot864 extends IterativeRobot {
 //    drivetrainComponent.setController(out.withCheck(out =>
 //      if (math.random > 0.99) println(out)
 //    ))
-  new CollectCubeTask(drivetrainComponent).init()
+
+    new CollectCubeTask(drivetrainComponent).init()
   }
 
   override def disabledInit(): Unit = {
