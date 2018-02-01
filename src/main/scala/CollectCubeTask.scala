@@ -3,10 +3,10 @@ import com.lynbrookrobotics.potassium.Signal
 import com.lynbrookrobotics.potassium.commons.drivetrain.unicycle.UnicycleSignal
 import com.lynbrookrobotics.potassium.frc.WPIClock
 import com.lynbrookrobotics.potassium.tasks.FiniteTask
-import com.lynbrookrobotics.potassium.vision.TargetTracking
-import com.lynbrookrobotics.potassium.vision.limelight.{CameraProperties, LimelightNetwork}
+import com.lynbrookrobotics.potassium.vision.VisionTargetTracking
+import com.lynbrookrobotics.potassium.vision.limelight.LimelightNetwork
 import squants.Percent
-import squants.space.{Degrees, Feet}
+import squants.space.Feet
 
 class CollectCubeTask(drivetrainComponent: DrivetrainComponent)
                      (implicit val drivetrainHardware: DrivetrainHardware,
@@ -14,12 +14,10 @@ class CollectCubeTask(drivetrainComponent: DrivetrainComponent)
 
   def onStart(): Unit = {
     val limeLightNetwork: LimelightNetwork = LimelightNetwork(WPIClock)
-    implicit val camProps: CameraProperties =  CameraProperties(Degrees(2), Degrees(0), Feet(17/12), Feet(11/12))
-    val targeting = new TargetTracking(limeLightNetwork.xOffsetAngle, limeLightNetwork.percentArea)
+    val distance = VisionTargetTracking.distanceToTarget(limeLightNetwork.percentArea)
+    val angle = VisionTargetTracking.angleToTarget(limeLightNetwork.xOffsetAngle)
 
-    val xOffsets = targeting.angleToTarget.map(p => -p)
-
-    val turnPosition = drivetrainHardware.turnPosition.zipAsync(xOffsets).map{t =>
+    val turnPosition = drivetrainHardware.turnPosition.zipAsync(angle).map{t =>
       println("t =", t)
       t._1 + t._2
     }
@@ -33,7 +31,7 @@ class CollectCubeTask(drivetrainComponent: DrivetrainComponent)
     )
 
     drivetrainComponent.setController(out.withCheck(_ =>
-      targeting.distanceToTarget.foreach(p =>
+      distance.foreach(p =>
         if (!p.exists(_ >= Feet(2))) {
           println("p =", p)
           finished()

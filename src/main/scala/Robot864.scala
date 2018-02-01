@@ -1,15 +1,8 @@
-import com.lynbrookrobotics.potassium.commons.drivetrain.UnicycleControlMode
-import com.lynbrookrobotics.potassium.{Signal, streams}
-import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSidedVelocity
-import com.lynbrookrobotics.potassium.commons.drivetrain.unicycle.UnicycleSignal
+import com.lynbrookrobotics.potassium.Signal
 import com.lynbrookrobotics.potassium.frc.WPIClock
-import com.lynbrookrobotics.potassium.vision.TargetTracking
-import com.lynbrookrobotics.potassium.vision.limelight.{CameraProperties, LimelightNetwork}
+import com.lynbrookrobotics.potassium.vision.limelight.LimelightNetwork
 import edu.wpi.first.wpilibj.{IterativeRobot, Joystick}
-import squants.Percent
-import squants.motion.FeetPerSecond
-import squants.space.{Degrees, Feet}
-import squants.time.Milliseconds
+
 
 class Robot864 extends IterativeRobot {
   implicit val drivetrainHardware = new DrivetrainHardware
@@ -24,16 +17,6 @@ class Robot864 extends IterativeRobot {
 
   override def teleopInit(): Unit = {
     drivetrainComponent.resetToDefault()
-//    val absoluteTargetDistance = drivetrainHardware.forwardPosition.zipAsync(targeting.distanceToTarget.map(p => {
-//      if (math.random > 0.99) println(p)
-//      p.map(x => Feet(2) - x).getOrElse(Feet(0))
-//    })).map(t => t._1 + t._2)
-
-//    val forwardPositionControlling = Drivetrain.UnicycleControllers.forwardPositionControl(absoluteTargetDistance)._1
-
-//    drivetrainComponent.setController(out.withCheck(out =>
-//      if (math.random > 0.99) println(out)
-//    ))
 
     new CollectCubeTask(drivetrainComponent).init()
   }
