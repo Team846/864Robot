@@ -1,18 +1,15 @@
-import java.util.InputMismatchException
-
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.commons.drivetrain.NoOperation
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedDrive
 import com.lynbrookrobotics.potassium.commons.drivetrain.twoSided.TwoSided
-import com.lynbrookrobotics.potassium.control.OffloadedSignal.{EscPositionGains, EscVelocityGains}
-import com.lynbrookrobotics.potassium.control.{OffloadedSignal, OpenLoop, PositionControl, VelocityControl}
+import com.lynbrookrobotics.potassium.control.offload.OffloadedSignal.OpenLoop
+import com.lynbrookrobotics.potassium.control.offload.{EscConfig, OffloadedSignal}
 import com.lynbrookrobotics.potassium.streams._
 import com.lynbrookrobotics.potassium.{Component, Signal}
 import squants.Percent
+import squants.space.Length
 
 package object drivetrain extends OffloadedDrive {
-  self =>
   override type Properties = DrivetrainProperties
   override type Hardware = DrivetrainHardware
 

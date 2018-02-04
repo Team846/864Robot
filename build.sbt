@@ -14,15 +14,15 @@ resolvers += "opencv-maven" at "http://first.wpi.edu/FRC/roborio/maven/developme
 organization := "com.lynbrookrobotics"
 teamNumber := 846
 
-val potassiumVersion = "0.1.0-050cd127"
+val potassiumVersion = "0.1.0-8d2d4961"
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-core" % potassiumVersion
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-commons" % potassiumVersion
 libraryDependencies += "com.lynbrookrobotics" %% "potassium-frc" % potassiumVersion
 
-val wpiVersion = "2018.1.1"
+val wpiVersion = "2018.2.2"
 libraryDependencies += "edu.wpi.first" % "wpilib" % wpiVersion
 libraryDependencies += "edu.wpi.first" % "cscore" % wpiVersion
 libraryDependencies += "edu.wpi.first" % "ntcore" % wpiVersion
 libraryDependencies += "edu.wpi.first" % "wpiutil" % wpiVersion
-libraryDependencies += "com.ctre" % "phoenix" % "5.1.3.1"
+libraryDependencies += "com.ctre" % "phoenix" % "5.2.1.1"
 libraryDependencies += "org.opencv" % "opencv-java" % "3.2.0"

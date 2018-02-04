@@ -1,13 +1,15 @@
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
+package drivetrain
+
 import com.lynbrookrobotics.potassium.commons.drivetrain._
 import com.lynbrookrobotics.potassium.commons.drivetrain.offloaded.OffloadedProperties
 import com.lynbrookrobotics.potassium.control.PIDConfig
+import com.lynbrookrobotics.potassium.control.offload.EscConfig
 import com.lynbrookrobotics.potassium.units.GenericValue._
 import com.lynbrookrobotics.potassium.units.{Ratio, _}
 import squants.motion._
 import squants.space.{Feet, Inches, Turns}
 import squants.time._
-import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Time, Velocity}
+import squants.{Acceleration, Angle, Dimensionless, Each, Length, Percent, Velocity}
 
 class DrivetrainProperties extends OffloadedProperties {
   val leftPort /*Back*/ = 50
@@ -39,9 +41,10 @@ class DrivetrainProperties extends OffloadedProperties {
   override val blendExponent: Double = 0
   override val track: Length = null
 
-  override val escTimeConst: Time = Milliseconds(100)
   override val wheelDiameter: Length = Inches(4)
   override val wheelOverEncoderGears: Ratio[Angle, Angle] = Ratio(Turns(1), Turns(2))
   override val encoderAngleOverTicks: Ratio[Angle, Dimensionless] = Ratio(Turns(1), Each(4096))
-  override val escNativeOutputOverPercent: Ratio[Dimensionless, Dimensionless] = Ratio(Each(1023), Percent(100))
+  override val escConfig: EscConfig[Length] = EscConfig(
+    ticksPerUnit = floorPerTick.recip
+  )
 }
