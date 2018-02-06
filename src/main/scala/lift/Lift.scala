@@ -24,8 +24,12 @@ object Lift extends OffloadedLift {
   class Hardware(implicit val coreTicks: Stream[_], val p: Properties) extends LiftHardware {
     private val tOut = 0
     private val idx = 0
-    val master = new LazyTalon(new TalonSRX(p.masterPort), idx, tOut)
-    val slave = new LazyTalon(new TalonSRX(p.slavePort), idx, tOut)
+    val master = new LazyTalon(new TalonSRX(p.masterPort), idx, tOut,
+      defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+    )
+    val slave = new LazyTalon(new TalonSRX(p.slavePort), idx, tOut,
+      defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+    )
     TalonManager.setToDefault(master.t)
     TalonManager.setToDefault(slave.t)
 
@@ -69,7 +73,7 @@ object Lift extends OffloadedLift {
 
     override def positionGains = PIDConfig(
       Percent(100) / Inches(6),
-      Percent(3) / (Inches(1) * Seconds(1)),
+      Percent(0) / (Inches(1) * Seconds(1)),
       Percent(0) / FeetPerSecond(1)
     )
 

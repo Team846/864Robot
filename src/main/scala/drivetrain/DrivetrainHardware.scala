@@ -25,10 +25,22 @@ class DrivetrainHardware(implicit props: DrivetrainProperties,
   private val escIdx = 0
   private val escTout = 0
 
-  val left /*Back*/ = new LazyTalon(new TalonSRX(leftPort), escIdx, escTout)
-  val right /*Back*/ = new LazyTalon(new TalonSRX(rightPort), escIdx, escTout)
-  val leftFollower /*Front*/ = new LazyTalon(new TalonSRX(leftFollowerPort), escIdx, escTout)
-  val rightFollower /*Front*/ = new LazyTalon(new TalonSRX(rightFollowerPort), escIdx, escTout)
+  val left /*Back*/ = new LazyTalon(
+    new TalonSRX(leftPort), escIdx, escTout,
+    defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+  )
+  val right /*Back*/ = new LazyTalon(
+    new TalonSRX(rightPort), escIdx, escTout,
+    defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+  )
+  val leftFollower /*Front*/ = new LazyTalon(
+    new TalonSRX(leftFollowerPort), escIdx, escTout,
+    defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+  )
+  val rightFollower /*Front*/ = new LazyTalon(
+    new TalonSRX(rightFollowerPort), escIdx, escTout,
+    defaultPeakOutputReverse = -1, defaultPeakOutputForward = 1
+  )
 
   Set(left, right, leftFollower, rightFollower)
     .map(_.t)

@@ -2,8 +2,9 @@ import com.lynbrookrobotics.potassium.Signal
 import com.lynbrookrobotics.potassium.clock.Clock
 import com.lynbrookrobotics.potassium.frc.WPIClock
 import com.lynbrookrobotics.potassium.streams._
-import edu.wpi.first.wpilibj.RobotBase
+import com.lynbrookrobotics.potassium.tasks.FiniteTask
 import edu.wpi.first.wpilibj.hal.HAL
+import edu.wpi.first.wpilibj.{Joystick, RobotBase}
 import lift.Lift
 import squants.space.Inches
 import squants.time.Milliseconds
@@ -47,13 +48,24 @@ class Robot864 extends RobotBase {
     implicit val h = new Lift.Hardware()
     val c = new Lift.Comp()
 
-    val (error, controller) = Lift.positionControl(
-      coreTicks.mapToConstant(Inches(10.5) + Inches(6))
-    )
-    c.setController(controller)
-    error.foreach { it =>
-      if (Math.random() > 0.99) println(it)
+    class PrintTask(msg: String) extends FiniteTask() {
+      override protected def onStart(): Unit = {
+        println(msg)
+        finished()
+      }
+
+      override protected def onEnd() = Unit
     }
+
+    val j1 = new Joystick(0)
+    val j2 = new Joystick(1)
+
+    coreTicks.eventWhen(_ => j1.getTrigger).foreach(
+      new Lift.positionTasks.WhileAtPosition(
+        coreTicks.map(_ => Inches(10.5 + 6) + Inches(j1.getY() * 6)),
+        Inches(0)
+      )(c).apply(new PrintTask("at ")).toContinuous
+    )
 
     HAL.observeUserProgramStarting()
     while (true) {
